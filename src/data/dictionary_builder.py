@@ -8,6 +8,7 @@ import json
 import re
 from pathlib import Path
 from collections import defaultdict, Counter
+from datetime import datetime
 
 # Add project root to path to fix src imports when running directly
 project_root = Path(__file__).parent.parent.parent
@@ -206,6 +207,62 @@ class DictionaryBuilder:
             "coverage_percentage": f"{(common_words_in_dict/len(self.common_english_words))*100:.1f}%"
         }
 
+    def analyze_dictionary_coverage(self, common_words_list=None):
+        """Analyze how well the dictionary covers common words"""
+        if common_words_list is None:
+            common_words_list = self.common_english_words
+        
+        covered = [word for word in common_words_list if word in self.dictionary]
+        missing = [word for word in common_words_list if word not in self.dictionary]
+        
+        coverage_stats = {
+            'total_common_words': len(common_words_list),
+            'covered': len(covered),
+            'missing': len(missing),
+            'coverage_percentage': (len(covered) / len(common_words_list)) * 100,
+            'top_missing_words': missing[:20]  # Show top 20 missing words
+        }
+        
+        return coverage_stats
+
+    def export_dictionary_report(self):
+        """Export comprehensive dictionary report"""
+        # Get statistics
+        stats = self.get_statistics()
+        coverage_stats = self.analyze_dictionary_coverage()
+        
+        # Get most translated words
+        most_translated_words = sorted(
+            [(word, len(translations)) for word, translations in self.dictionary.items()],
+            key=lambda x: x[1], reverse=True
+        )[:20]  # Top 20 words with most translations
+        
+        # Get sample entries from different categories
+        all_words = list(self.dictionary.keys())
+        common_words_samples = [w for w in all_words if w in self.common_english_words][:10]
+        other_words_samples = [w for w in all_words if w not in self.common_english_words][:10]
+        
+        report = {
+            'build_timestamp': datetime.now().isoformat(),
+            'statistics': stats,
+            'coverage_analysis': coverage_stats,
+            'sample_common_words': {word: self.dictionary[word] for word in common_words_samples},
+            'sample_other_words': {word: self.dictionary[word] for word in other_words_samples},
+            'most_translated_words': most_translated_words,
+            'dictionary_size_bytes': len(json.dumps(self.dictionary, ensure_ascii=False))
+        }
+        
+        # Ensure reports directory exists
+        from src.config import settings
+        settings.DICTIONARY_DIR.mkdir(parents=True, exist_ok=True)
+        
+        report_file = settings.DICTIONARY_DIR / f"dictionary_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        with open(report_file, "w", encoding="utf-8") as f:
+            json.dump(report, f, ensure_ascii=False, indent=2)
+        
+        print(f"📊 Dictionary report exported: {report_file}")
+        return report_file
+
 def build_dictionary():
     """Main function to build dictionary"""
     print("=" * 60)
@@ -245,6 +302,12 @@ def build_dictionary():
     print(f"\n🔍 SAMPLE OTHER WORDS:")
     for word in other_words:
         print(f"   '{word}': {builder.dictionary[word]}")
+    
+    # Export dictionary report
+    try:
+        builder.export_dictionary_report()
+    except Exception as e:
+        print(f"⚠️  Could not export dictionary report: {e}")
     
     print(f"\n✅ Dictionary building completed successfully!")
     return builder.dictionary
