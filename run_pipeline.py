@@ -6,6 +6,7 @@ With session management, quality metrics, and advanced analytics
 
 import sys
 import os
+import json
 from pathlib import Path
 
 # Add the project root to Python path - FIXED PATH HANDLING
@@ -222,7 +223,8 @@ def run_individual_step(step_name):
             print(f"Total words: {len(builder.dictionary)}")
             print(f"Common words coverage: {coverage_stats['coverage_percentage']:.1f}%")
             print(f"Covered: {coverage_stats['covered']}/{coverage_stats['total_common_words']}")
-            print(f"Missing: {coverage_stats['missing'][:10]}...")  # Show top 10 missing
+            if coverage_stats['missing']:
+                print(f"Missing: {coverage_stats['missing'][:10]}...")  # Show top 10 missing
             
             # Export full report
             builder.export_dictionary_report()
@@ -230,8 +232,12 @@ def run_individual_step(step_name):
         elif step_name == 'session-stats':
             # Show recent session statistics
             from src.utils.session_manager import SessionManager
-            import json
-            session_files = list(Path("results/translation_sessions").glob("*.json"))
+            sessions_dir = Path("results/translation_sessions")
+            if not sessions_dir.exists():
+                print("📭 No session history found. Run 'interactive' first to create sessions.")
+                return
+                
+            session_files = list(sessions_dir.glob("*.json"))
             if not session_files:
                 print("📭 No session history found. Run 'interactive' first to create sessions.")
                 return
@@ -249,7 +255,12 @@ def run_individual_step(step_name):
         elif step_name == 'vocabulary-gaps':
             # Analyze vocabulary gaps across sessions
             from src.utils.session_manager import SessionManager
-            session_files = list(Path("results/translation_sessions").glob("*.json"))
+            sessions_dir = Path("results/translation_sessions")
+            if not sessions_dir.exists():
+                print("📭 No session history found. Run 'interactive' first to create sessions.")
+                return
+                
+            session_files = list(sessions_dir.glob("*.json"))
             if not session_files:
                 print("📭 No session history found. Run 'interactive' first to create sessions.")
                 return

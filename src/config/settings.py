@@ -32,8 +32,17 @@ MAX_TRANSLATIONS_PER_WORD = 3
 # Evaluation parameters
 BLEU_WEIGHTS = (0.25, 0.25, 0.25, 0.25)  # Uniform weights for BLEU-4
 
+# Interactive Translation Settings
+MAX_SENTENCE_LENGTH_TRANSLATE = 20  # Maximum words for interactive translation
+SHOW_COVERAGE_PERCENTAGE = True     # Show coverage percentage in analysis
+SHOW_WORD_ANALYSIS = True          # Show word-by-word analysis
+SAVE_SESSION_HISTORY = True        # Save translation sessions
+
+# Session Management
+SESSION_HISTORY_PATH = PROJECT_ROOT / "results" / "translation_sessions"
+
 # Ensure directories exist
-for directory in [RAW_DATA_DIR, PROCESSED_DATA_DIR, DICTIONARY_DIR, EXPERIMENTS_DIR, LOGS_DIR]:
+for directory in [RAW_DATA_DIR, PROCESSED_DATA_DIR, DICTIONARY_DIR, EXPERIMENTS_DIR, LOGS_DIR, SESSION_HISTORY_PATH]:
     directory.mkdir(parents=True, exist_ok=True)
 
 # HuggingFace dataset config

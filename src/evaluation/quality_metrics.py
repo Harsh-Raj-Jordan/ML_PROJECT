@@ -78,15 +78,19 @@ class QualityMetrics:
     def get_session_quality_report(self):
         """Get quality report for entire session"""
         if not self.metrics_history:
-            return {}
+            return {
+                'average_quality': 0,
+                'total_translations': 0,
+                'quality_trend': 'stable'
+            }
         
         avg_quality = np.mean([m['quality_score'] for m in self.metrics_history])
         avg_coverage = np.mean([m['dictionary_coverage'] for m in self.metrics_history])
         
         return {
             'total_translations': len(self.metrics_history),
-            'average_quality_score': avg_quality,
-            'average_coverage': avg_coverage,
+            'average_quality_score': f"{avg_quality:.1f}%",
+            'average_coverage': f"{avg_coverage:.1f}%",
             'quality_trend': 'improving' if len(self.metrics_history) > 1 and 
                             self.metrics_history[-1]['quality_score'] > self.metrics_history[0]['quality_score'] else 'stable'
         }

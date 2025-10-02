@@ -81,6 +81,8 @@ def interactive_translator():
                 
                 # Analyze translation
                 word_analysis = show_word_analysis(user_input, translator)
+                
+                # Calculate quality metrics
                 quality_info = quality_metrics.calculate_sentence_quality(user_input, translation)
                 
                 # Display results
@@ -93,13 +95,17 @@ def interactive_translator():
                     print(f"📊 Quality Score: {quality_info['quality_score']:.1f}/100")
                 print("=" * 50)
                 
-                # Save to session
-                session_manager.add_translation(user_input, translation, {
-                    'coverage': word_analysis['coverage'],
-                    'found': word_analysis['found'],
-                    'missing': word_analysis['missing'],
-                    'quality_score': quality_info['quality_score']
-                })
+                # Save to session - match the actual method signature
+                session_manager.add_translation(
+                    input_text=user_input,
+                    output_text=translation,
+                    word_analysis={
+                        'coverage': word_analysis['coverage'],
+                        'found': word_analysis['found'],
+                        'missing': word_analysis['missing'],
+                        'quality_score': quality_info['quality_score']
+                    }
+                )
                 
             except KeyboardInterrupt:
                 print(f"\n\n🛑 Session interrupted. Translated {session_count} sentences.")
@@ -190,20 +196,23 @@ def show_session_stats(session_manager, quality_metrics):
 
 def show_dictionary_coverage(translator):
     """Show dictionary coverage information"""
-    from src.data.dictionary_builder import DictionaryBuilder
-    
-    builder = DictionaryBuilder()
-    builder.dictionary = translator.dictionary  # Reuse existing dictionary
-    
-    coverage_stats = builder.analyze_dictionary_coverage()
-    
-    print("\n📚 DICTIONARY COVERAGE:")
-    print("=" * 30)
-    print(f"   Common Words: {coverage_stats['covered']}/{coverage_stats['total_common_words']}")
-    print(f"   Coverage: {coverage_stats['coverage_percentage']:.1f}%")
-    
-    if coverage_stats['missing']:
-        print(f"   Top Missing: {', '.join(coverage_stats['missing'][:10])}")
+    try:
+        from src.data.dictionary_builder import DictionaryBuilder
+        
+        builder = DictionaryBuilder()
+        builder.dictionary = translator.dictionary  # Reuse existing dictionary
+        
+        coverage_stats = builder.analyze_dictionary_coverage()
+        
+        print("\n📚 DICTIONARY COVERAGE:")
+        print("=" * 30)
+        print(f"   Common Words: {coverage_stats['covered']}/{coverage_stats['total_common_words']}")
+        print(f"   Coverage: {coverage_stats['coverage_percentage']:.1f}%")
+        
+        if coverage_stats['missing']:
+            print(f"   Top Missing: {', '.join(coverage_stats['missing'][:10])}")
+    except Exception as e:
+        print(f"⚠️  Could not generate coverage report: {e}")
 
 def show_quality_report(quality_metrics):
     """Show translation quality report"""

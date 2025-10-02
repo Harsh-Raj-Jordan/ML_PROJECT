@@ -12,6 +12,8 @@ class SessionManager:
     def __init__(self):
         self.session_data = []
         self.current_session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # Ensure session directory exists
+        settings.SESSION_HISTORY_PATH.mkdir(parents=True, exist_ok=True)
     
     def add_translation(self, input_text, output_text, word_analysis=None):
         """Add a translation to session history"""
@@ -52,6 +54,7 @@ class SessionManager:
     def save_session(self, format='json'):
         """Save session data to file"""
         if not self.session_data:
+            print("📭 No session data to save.")
             return None
         
         filename = f"translation_session_{self.current_session_id}"
@@ -96,5 +99,7 @@ class SessionManager:
                 for word in sorted(missing_words):
                     f.write(f"{word}\n")
             print(f"📝 Vocabulary gaps exported: {gaps_file}")
-        
-        return list(missing_words)
+            return list(missing_words)
+        else:
+            print("✅ No vocabulary gaps found in this session!")
+            return []
