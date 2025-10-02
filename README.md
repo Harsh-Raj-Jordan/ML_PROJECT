@@ -158,6 +158,8 @@ Run specific pipeline steps independently:
 | `python run_pipeline.py dictionary` | Build bilingual dictionary |
 | `python run_pipeline.py translate` | Test translation system |
 | `python run_pipeline.py evaluate` | Run evaluation metrics |
+| `python run_pipeline.py interactive` | Live translation |
+| `python run_pipeline.py analyze` | Dictionary analysis |
 | `python run_pipeline.py baseline` | Test baseline model |
 | `python run_pipeline.py help` | Show all available commands |
 
