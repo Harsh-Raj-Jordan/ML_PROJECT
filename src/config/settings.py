@@ -22,16 +22,19 @@ DICTIONARY_PATH = DICTIONARY_DIR / "eng_asm_dict.json"
 SRC_LANG = "eng_Latn"
 TGT_LANG = "asm_Beng"
 TRAIN_TEST_SPLIT = 0.8
-MIN_SENTENCE_LENGTH = 3
-MAX_SENTENCE_LENGTH = 50
+MIN_SENTENCE_LENGTH = 1  # Reduced to include more sentences
+MAX_SENTENCE_LENGTH = 30  # Reduced for better alignment
 
 # Enhanced Dictionary Building Parameters
-MIN_WORD_FREQUENCY = 0.5           # Lower threshold for more words
-MAX_TRANSLATIONS_PER_WORD = 5      # More translation variants
+MIN_WORD_FREQUENCY = 0.3           # Much lower threshold for more words
+MAX_TRANSLATIONS_PER_WORD = 3      # Reduced for better quality
 DICTIONARY_MAX_SIZE = 200000       # Target dictionary size
 
-# Evaluation parameters
+# Evaluation parameters with smoothing
 BLEU_WEIGHTS = (0.25, 0.25, 0.25, 0.25)  # Uniform weights for BLEU-4
+USE_BLEU_SMOOTHING = True
+EVALUATION_MAX_SAMPLES = 200       # Smaller for faster iteration
+MAX_EVALUATION_LENGTH = 15         # Only evaluate shorter sentences
 
 # Interactive Translation Settings
 MAX_SENTENCE_LENGTH_TRANSLATE = 20  # Maximum words for interactive translation
@@ -51,9 +54,13 @@ DATASET_NAME = "ai4bharat/BPCC"
 DATASET_CONFIG = "bpcc-seed-latest"
 
 # Processing Parameters
-PROCESSING_BATCH_SIZE = 10000      # Progress reporting interval
+PROCESSING_BATCH_SIZE = 5000       # Smaller batches for better progress
 
 # Translator Settings
-TRANSLATOR_MAX_CONTEXT_WORDS = 3
+TRANSLATOR_MAX_CONTEXT_WORDS = 2
 ENABLE_FUZZY_MATCHING = True
 SHOW_TRANSLATION_ANALYSIS = True
+
+# Quality thresholds
+MIN_DICTIONARY_SIZE = 50000        # Minimum acceptable dictionary size
+EVALUATION_MIN_SAMPLES = 50        # Minimum samples for evaluation
