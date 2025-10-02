@@ -180,13 +180,13 @@ data/dictionary/
 *.txt
 
 # Model files - LARGE FILES!
-models/
-*.pth
-*.pt
-*.bin
-*.safetensors
-*.onnx
-*.tflite
+# models/
+# *.pth
+# *.pt
+# *.bin
+# *.safetensors
+# *.onnx
+# *.tflite
 
 # Checkpoints and training outputs
 checkpoints/
@@ -270,8 +270,8 @@ config/keys.json
 .env.production
 
 # Large language models (if any)
-models/llms/
-models/pretrained/
+# models/llms/
+# models/pretrained/
 
 # =============================================================================
 # Optional: Uncomment if you want to keep these in version control
