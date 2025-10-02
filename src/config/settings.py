@@ -25,9 +25,10 @@ TRAIN_TEST_SPLIT = 0.8
 MIN_SENTENCE_LENGTH = 3
 MAX_SENTENCE_LENGTH = 50
 
-# Dictionary parameters
-MIN_WORD_FREQUENCY = 1
-MAX_TRANSLATIONS_PER_WORD = 3
+# Enhanced Dictionary Building Parameters
+MIN_WORD_FREQUENCY = 0.5           # Lower threshold for more words
+MAX_TRANSLATIONS_PER_WORD = 5      # More translation variants
+DICTIONARY_MAX_SIZE = 200000       # Target dictionary size
 
 # Evaluation parameters
 BLEU_WEIGHTS = (0.25, 0.25, 0.25, 0.25)  # Uniform weights for BLEU-4
@@ -48,3 +49,11 @@ for directory in [RAW_DATA_DIR, PROCESSED_DATA_DIR, DICTIONARY_DIR, EXPERIMENTS_
 # HuggingFace dataset config
 DATASET_NAME = "ai4bharat/BPCC"
 DATASET_CONFIG = "bpcc-seed-latest"
+
+# Processing Parameters
+PROCESSING_BATCH_SIZE = 10000      # Progress reporting interval
+
+# Translator Settings
+TRANSLATOR_MAX_CONTEXT_WORDS = 3
+ENABLE_FUZZY_MATCHING = True
+SHOW_TRANSLATION_ANALYSIS = True
