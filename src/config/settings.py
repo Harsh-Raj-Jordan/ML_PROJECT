@@ -25,10 +25,15 @@ TRAIN_TEST_SPLIT = 0.8
 MIN_SENTENCE_LENGTH = 1  # Reduced to include more sentences
 MAX_SENTENCE_LENGTH = 30  # Reduced for better alignment
 
-# Enhanced Dictionary Building Parameters
-MIN_WORD_FREQUENCY = 0.3           # Much lower threshold for more words
-MAX_TRANSLATIONS_PER_WORD = 3      # Reduced for better quality
-DICTIONARY_MAX_SIZE = 200000       # Target dictionary size
+# Add these to your existing settings:
+
+MIN_WORD_FREQUENCY = 0.1           # Extremely low threshold
+MAX_TRANSLATIONS_PER_WORD = 5      # More variants
+DICTIONARY_MAX_SIZE = 110783885      # Much larger target
+
+# Processing Parameters  
+PROCESSING_BATCH_SIZE = 10000      # Progress reporting
+MAX_DICTIONARY_EXAMPLES = 110783885   # Process 110M examples
 
 # Evaluation parameters with smoothing
 BLEU_WEIGHTS = (0.25, 0.25, 0.25, 0.25)  # Uniform weights for BLEU-4
@@ -64,3 +69,18 @@ SHOW_TRANSLATION_ANALYSIS = True
 # Quality thresholds
 MIN_DICTIONARY_SIZE = 50000        # Minimum acceptable dictionary size
 EVALUATION_MIN_SAMPLES = 50        # Minimum samples for evaluation
+
+# Enhanced Evaluation Settings
+USE_BLEU_SMOOTHING = True
+EVALUATION_MAX_SAMPLES = 200
+MAX_EVALUATION_LENGTH = 15
+EVALUATION_MIN_SAMPLES = 20  # Reduced for more flexibility
+
+# Quality Thresholds
+EXCELLENT_BLEU_THRESHOLD = 0.05
+GOOD_BLEU_THRESHOLD = 0.02
+FAIR_BLEU_THRESHOLD = 0.01
+
+# Dictionary Quality Targets
+TARGET_DICTIONARY_SIZE = 50000
+MIN_DICTIONARY_FOR_GOOD_SCORE = 10000

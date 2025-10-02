@@ -3,6 +3,7 @@ Enhanced evaluation with better metrics and smoothing
 """
 
 import json
+import numpy as np
 from nltk.translate.bleu_score import sentence_bleu, SmoothingFunction
 from rouge_score import rouge_scorer
 from src.config import settings
@@ -84,22 +85,28 @@ class TranslationEvaluator:
         
         avg_bleu = sum(bleu_scores) / len(bleu_scores) if bleu_scores else 0
         
-        # Calculate ROUGE scores
-        rouge1_scores = []
-        rouge2_scores = []
-        rougeL_scores = []
+        # FIXED: Calculate ROUGE scores properly
+        rouge1_f1_scores = []
+        rouge2_f1_scores = [] 
+        rougeL_f1_scores = []
         
         for i in range(len(references)):
             ref_text = ' '.join(references[i][0])
             hyp_text = ' '.join(hypotheses[i])
+            
+            # Skip empty references or hypotheses
+            if not ref_text.strip() or not hyp_text.strip():
+                continue
+                
             scores = self.scorer.score(ref_text, hyp_text)
-            rouge1_scores.append(scores['rouge1'].fmeasure)
-            rouge2_scores.append(scores['rouge2'].fmeasure)
-            rougeL_scores.append(scores['rougeL'].fmeasure)
+            rouge1_f1_scores.append(scores['rouge1'].fmeasure)
+            rouge2_f1_scores.append(scores['rouge2'].fmeasure)
+            rougeL_f1_scores.append(scores['rougeL'].fmeasure)
         
-        avg_rouge1 = sum(rouge1_scores) / len(rouge1_scores) if rouge1_scores else 0
-        avg_rouge2 = sum(rouge2_scores) / len(rouge2_scores) if rouge2_scores else 0
-        avg_rougeL = sum(rougeL_scores) / len(rougeL_scores) if rougeL_scores else 0
+        # Calculate averages only if we have valid scores
+        avg_rouge1 = np.mean(rouge1_f1_scores) if rouge1_f1_scores else 0.0
+        avg_rouge2 = np.mean(rouge2_f1_scores) if rouge2_f1_scores else 0.0
+        avg_rougeL = np.mean(rougeL_f1_scores) if rougeL_f1_scores else 0.0
         
         # Get sample examples for analysis
         sample_examples = []
@@ -117,7 +124,12 @@ class TranslationEvaluator:
             "rougeL": avg_rougeL,
             "test_size": len(test_data),
             "evaluated_size": valid_count,
-            "sample_examples": sample_examples
+            "sample_examples": sample_examples,
+            "metrics_breakdown": {
+                "bleu_scores_count": len(bleu_scores),
+                "rouge_scores_count": len(rouge1_f1_scores),
+                "avg_bleu_per_sentence": avg_bleu
+            }
         }
 
 def evaluate_translation():
@@ -141,6 +153,12 @@ def main():
         print(f"   ROUGE-2 F1: {results['rouge2']:.4f}")
         print(f"   ROUGE-L F1: {results['rougeL']:.4f}")
         
+        # Show metrics breakdown
+        metrics = results.get('metrics_breakdown', {})
+        print(f"\n📊 Metrics Breakdown:")
+        print(f"   BLEU scores calculated: {metrics.get('bleu_scores_count', 0)}")
+        print(f"   ROUGE scores calculated: {metrics.get('rouge_scores_count', 0)}")
+        
         print(f"\n🔍 Sample Translations:")
         for i, (src, ref, hyp) in enumerate(results['sample_examples']):
             print(f"   Example {i + 1}:")
@@ -149,14 +167,21 @@ def main():
             print(f"      Hypothesis: {hyp}")
             print()
         
-        # Quality assessment
-        if results['bleu'] > 0.01:
-            print("✅ Translation quality is improving!")
+        # Enhanced quality assessment
+        bleu_score = results['bleu']
+        if bleu_score > 0.05:
+            print("🎉 EXCELLENT: Translation quality is very good!")
+        elif bleu_score > 0.02:
+            print("✅ GOOD: Translation quality is improving!")
+        elif bleu_score > 0.01:
+            print("⚠️  FAIR: Translation quality needs improvement.")
         else:
-            print("⚠️  Translation quality needs improvement. Consider:")
-            print("   - Rebuilding dictionary with more data")
-            print("   - Adding more default translations")
-            print("   - Improving word alignment strategies")
+            print("❌ POOR: Translation quality needs significant improvement.")
+            print("💡 Suggestions:")
+            print("   - Rebuild dictionary with more data")
+            print("   - Add more default translations for common words")
+            print("   - Improve word alignment strategies")
+            print("   - Consider using transformer models")
         
         print("✅ Evaluation completed successfully!")
         
