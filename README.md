@@ -492,8 +492,6 @@ Need help? Here's what to do:
 
 <div align="center">
 
-### 🌟 If this project helped you, please give it a star! 🌟
-
 Made with ❤️ by Harsh Raj Jordan
 
 [⬆ Back to Top](#-transformer-based-english-assamese-machine-translation)
