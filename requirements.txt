@@ -1,0 +1,22 @@
+# Core dependencies
+torch>=2.0.0
+transformers>=4.30.0
+datasets>=2.0.0
+huggingface-hub>=0.10.0
+
+# NLP & Data
+pandas>=1.4.0
+numpy>=1.21.0
+sentencepiece>=0.1.99
+protobuf>=3.20.0
+
+# Evaluation
+sacrebleu>=2.0.0
+
+# Utilities
+tqdm>=4.64.0
+
+# Transformer-specific dependencies
+accelerate>=0.20.0
+tokenizers>=0.13.0
+einops>=0.6.0

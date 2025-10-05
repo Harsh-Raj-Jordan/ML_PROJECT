@@ -1,86 +1,49 @@
-import os
 from pathlib import Path
 
-# Project root directory (fixed to work from any location)
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+# Define the project root directory
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 # Data paths
 DATA_DIR = PROJECT_ROOT / "data"
 RAW_DATA_DIR = DATA_DIR / "raw"
 PROCESSED_DATA_DIR = DATA_DIR / "processed"
-DICTIONARY_DIR = DATA_DIR / "dictionary"
-EXPERIMENTS_DIR = PROJECT_ROOT / "experiments"
-LOGS_DIR = PROJECT_ROOT / "logs"
 
 # File paths
 RAW_DATA_PATH = RAW_DATA_DIR / "eng_asm.json"
 TRAIN_DATA_PATH = PROCESSED_DATA_DIR / "train.json"
 TEST_DATA_PATH = PROCESSED_DATA_DIR / "test.json"
-DICTIONARY_PATH = DICTIONARY_DIR / "eng_asm_dict.json"
 
-# Dataset parameters
+# Dataset parameters (needed for download_data.py)
 SRC_LANG = "eng_Latn"
 TGT_LANG = "asm_Beng"
-TRAIN_TEST_SPLIT = 0.8
-MIN_SENTENCE_LENGTH = 1  # Reduced to include more sentences
-MAX_SENTENCE_LENGTH = 30  # Reduced for better alignment
-
-# Add these to your existing settings:
-
-MIN_WORD_FREQUENCY = 0.1           # Extremely low threshold
-MAX_TRANSLATIONS_PER_WORD = 5      # More variants
-DICTIONARY_MAX_SIZE = 110783885      # Much larger target
-
-# Processing Parameters  
-PROCESSING_BATCH_SIZE = 10000      # Progress reporting
-MAX_DICTIONARY_EXAMPLES = 110783885   # Process 110M examples
-
-# Evaluation parameters with smoothing
-BLEU_WEIGHTS = (0.25, 0.25, 0.25, 0.25)  # Uniform weights for BLEU-4
-USE_BLEU_SMOOTHING = True
-EVALUATION_MAX_SAMPLES = 200       # Smaller for faster iteration
-MAX_EVALUATION_LENGTH = 15         # Only evaluate shorter sentences
-
-# Interactive Translation Settings
-MAX_SENTENCE_LENGTH_TRANSLATE = 20  # Maximum words for interactive translation
-SHOW_COVERAGE_PERCENTAGE = True     # Show coverage percentage in analysis
-SHOW_WORD_ANALYSIS = True          # Show word-by-word analysis
-SAVE_SESSION_HISTORY = True        # Save translation sessions
-
-# Session Management
-SESSION_HISTORY_PATH = PROJECT_ROOT / "results" / "translation_sessions"
-
-# Ensure directories exist
-for directory in [RAW_DATA_DIR, PROCESSED_DATA_DIR, DICTIONARY_DIR, EXPERIMENTS_DIR, LOGS_DIR, SESSION_HISTORY_PATH]:
-    directory.mkdir(parents=True, exist_ok=True)
-
-# HuggingFace dataset config
 DATASET_NAME = "ai4bharat/BPCC"
 DATASET_CONFIG = "bpcc-seed-latest"
+MIN_SENTENCE_LENGTH = 1
+MAX_SENTENCE_LENGTH = 30
+TRAIN_TEST_SPLIT = 0.9
 
-# Processing Parameters
-PROCESSING_BATCH_SIZE = 5000       # Smaller batches for better progress
+# Transformer Model Configuration
+TRANSFORMER_CONFIG = {
+    'model_name': 'bert-base-multilingual-cased',
+    'vocab_size': 16000,
+    'batch_size': 16,
+    'num_epochs': 5,
+    'learning_rate': 5e-5,
+    'max_len': 128,
+    'decoder_layers': 4,
+    'decoder_heads': 8,
+    'decoder_ff_dim': 2048,
+    'dropout': 0.1,
+    'beam_size': 3,
+    'seed': 42,
+}
 
-# Translator Settings
-TRANSLATOR_MAX_CONTEXT_WORDS = 2
-ENABLE_FUZZY_MATCHING = True
-SHOW_TRANSLATION_ANALYSIS = True
+# Transformer Paths
+TRANSFORMER_MODEL_PATH = PROJECT_ROOT / "models" / "transformer_model"
+TRANSFORMER_MODEL_SAVE_PATH = TRANSFORMER_MODEL_PATH / "direct_en_bn_model.pt"
+SP_MODEL_PREFIX = TRANSFORMER_MODEL_PATH / "spm_assamese"
+TRANSFORMER_OUTPUT_DIR = TRANSFORMER_MODEL_PATH / "output"
 
-# Quality thresholds
-MIN_DICTIONARY_SIZE = 50000        # Minimum acceptable dictionary size
-EVALUATION_MIN_SAMPLES = 50        # Minimum samples for evaluation
-
-# Enhanced Evaluation Settings
-USE_BLEU_SMOOTHING = True
-EVALUATION_MAX_SAMPLES = 200
-MAX_EVALUATION_LENGTH = 15
-EVALUATION_MIN_SAMPLES = 20  # Reduced for more flexibility
-
-# Quality Thresholds
-EXCELLENT_BLEU_THRESHOLD = 0.05
-GOOD_BLEU_THRESHOLD = 0.02
-FAIR_BLEU_THRESHOLD = 0.01
-
-# Dictionary Quality Targets
-TARGET_DICTIONARY_SIZE = 50000
-MIN_DICTIONARY_FOR_GOOD_SCORE = 10000
+# Ensure all required directories exist
+for directory in [TRANSFORMER_MODEL_PATH, TRANSFORMER_OUTPUT_DIR, RAW_DATA_DIR, PROCESSED_DATA_DIR]:
+    directory.mkdir(parents=True, exist_ok=True)

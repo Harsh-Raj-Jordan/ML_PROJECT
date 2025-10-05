@@ -1,5 +1,3 @@
-# scripts/download_data.py
-
 #!/usr/bin/env python3
 """
 Download English-Assamese parallel corpus from HuggingFace
@@ -18,7 +16,7 @@ from huggingface_hub import login
 import json
 from src.config import settings
 
-def download_dataset(num_rows=110783885):
+def download_dataset(num_rows=10000):
     """Download the BPCC dataset"""
     print("🔐 Logging into HuggingFace Hub...")
     login()
@@ -97,7 +95,7 @@ def main():
     print("📥 ENGLISH-ASSAMESE DATA DOWNLOADER")
     print("=" * 60)
 
-    dataset = download_dataset(num_rows=110783885)  # Start with 55391943 for testing
+    dataset = download_dataset(num_rows=10000)
     processed_data = process_dataset(dataset)
     save_dataset(processed_data)
     
